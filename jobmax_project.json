@@ -1,0 +1,17 @@
+{
+  "name": "xl2tableau",
+  "language": "Python",
+  "tech": ["Tableau", "Excel", "Python", "Tableau calculated fields / LOD expressions", "Excel formulas (SUMIF, VLOOKUP, IFERROR)", "GitHub Actions"],
+  "targets": ["Tableau", "Excel", "Business intelligence / dashboard data preparation", "Data validation and reconciliation", "Automated testing and CI"],
+  "bullets": [
+    "Built xl2tableau in Python: migrates Excel models to Tableau, turning calc columns into Tableau calculated fields, parameters and FIXED LOD expressions in a .twbx",
+    "Wrote an Excel formula engine (parser, dependency graph, 41 functions) that matched 600,000/600,000 ground-truth cells; SUMIF hash indexes cut recalc time 16.6x at 2,000 rows",
+    "Validated each Tableau calc row by row against Excel: 99,998/100,000 rows agreed on a 10,000-row model; the 2 misses were a planted hardcoded Excel override the audit flagged"
+  ],
+  "summary": {
+    "what": "A command-line tool that reads an Excel workbook, recalculates it with its own formula engine, and converts its calculated columns into Tableau calculated fields, parameters and FIXED LOD expressions inside a packaged .twbx. It also writes an Excel audit report and checks every translated field row by row against the Excel results.",
+    "how": "Python with openpyxl. A tokenizer and precedence-climbing parser feed a dependency graph that uses range nodes and Kahn's algorithm for topological recalculation, with hash indexes for SUMIF/SUMIFS/VLOOKUP. Tables are detected and each column's formula is normalised to R1C1 form to find the column pattern and inconsistent cells. A translator maps the Excel AST to a Tableau AST, and the validator re-reads the written .twbx and evaluates the calcs with a model of Tableau's NULL semantics.",
+    "hardest": "Places where Excel and Tableau look equivalent but are not: blanks are 0 in Excel but NULL in Tableau, MOD takes the sign of the divisor in Excel but % takes the sign of the dividend, INT floors in Excel but truncates in Tableau, and string comparisons differ in case sensitivity. Each gap needed an explicit translation or a check that reports the affected rows. Avoiding O(N^2) cost when every row runs SUMIF over a whole column was the other hard part.",
+    "say": "I built a tool that migrates the logic of an Excel model into Tableau calculated fields and LOD expressions, then proves the migration correct by re-evaluating every translated field row by row against my own Excel formula engine. On a 10,000-row model it translated 10 of 12 calc columns, and 99,998 of 100,000 row checks agreed. The two that didn't were a hardcoded override I planted, which the audit caught."
+  }
+}
